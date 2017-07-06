@@ -42,10 +42,13 @@ RUN apt-get install -y wget sudo \
     && rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /sbin/entrypoint.sh
-RUN chmod +x /sbin/entrypoint.sh
 
-# Copy new license
-#COPY ./Splunk_Enterprise_Q3FY17.lic /var/opt/splunk/etc/licenses/download-trial/Splunk_Enterprise_Q3FY17.lic
+#Add these two files to create and enpoint configured for OCP secure_forward
+COPY props.conf /opt/splunk/etc/system/local/props.conf
+COPY inputs.conf /opt/splunk/etc/apps/search/local/inputs.conf
+
+
+RUN chmod +x /sbin/entrypoint.sh
 
 # Ports Splunk Web, Splunk Daemon, KVStore, Splunk Indexing Port, Network Input, HTTP Event Collector
 EXPOSE 8000/tcp 8089/tcp 8191/tcp 9997/tcp 1514 8088/tcp
@@ -54,6 +57,8 @@ WORKDIR /opt/splunk
 
 # Configurations folder, var folder for everything (indexes, logs, kvstore)
 VOLUME [ "/opt/splunk/etc", "/opt/splunk/var" ]
+
+USER splunk
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["start-service"]
