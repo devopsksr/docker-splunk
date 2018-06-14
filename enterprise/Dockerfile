@@ -41,14 +41,21 @@ RUN apt-get update && apt-get install -y wget sudo \
     && chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} ${SPLUNK_BACKUP_DEFAULT_ETC} \
     && rm -rf /var/lib/apt/lists/*
 
-COPY entrypoint.sh /sbin/entrypoint.sh
 
 #Add these two files to create and enpoint configured for OCP secure_forward
 COPY props.conf /opt/splunk/etc/system/local/props.conf
-COPY inputs.conf /opt/splunk/etc/apps/search/local/inputs.conf
+COPY tcp/inputs.conf /opt/splunk/etc/apps/search/local/inputs.conf
+COPY http/default/inputs.conf /opt/splunk/etc/apps/splunk_httpinput/default/inputs.conf
+COPY http/local/inputs.conf /opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf
+COPY launcher/local/inputs.conf /opt/splunk/etc/apps/launcher/local/inputs.conf
 
 
+
+COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod +x /sbin/entrypoint.sh
+
+# Copy new license
+#COPY ./Splunk_Enterprise_Q3FY17.lic /var/opt/splunk/etc/licenses/download-trial/Splunk_Enterprise_Q3FY17.lic
 
 # Ports Splunk Web, Splunk Daemon, KVStore, Splunk Indexing Port, Network Input, HTTP Event Collector
 EXPOSE 8000/tcp 8089/tcp 8191/tcp 9997/tcp 1514 8088/tcp
@@ -57,8 +64,6 @@ WORKDIR /opt/splunk
 
 # Configurations folder, var folder for everything (indexes, logs, kvstore)
 VOLUME [ "/opt/splunk/etc", "/opt/splunk/var" ]
-
-USER splunk
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["start-service"]
