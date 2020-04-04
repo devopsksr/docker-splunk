@@ -6,14 +6,14 @@ ENV SPLUNK_BUILD fa31da744b51
 ENV SPLUNK_FILENAME splunk-${SPLUNK_VERSION}-${SPLUNK_BUILD}-Linux-x86_64.tgz
 
 ENV SPLUNK_HOME /opt/splunk
-ENV SPLUNK_GROUP splunk
-ENV SPLUNK_USER splunk
+#ENV SPLUNK_GROUP splunk
+#ENV SPLUNK_USER splunk
 ENV SPLUNK_BACKUP_DEFAULT_ETC /var/opt/splunk
 ARG DEBIAN_FRONTEND=noninteractive
 
 # add splunk:splunk user
-RUN groupadd -r ${SPLUNK_GROUP} \
-    && useradd -r -m -g ${SPLUNK_GROUP} ${SPLUNK_USER}
+#RUN add -r ${SPLUNK_GROUP} \
+#    && useradd -r -m -g ${SPLUNK_GROUP} ${SPLUNK_USER}
 
 # make the "en_US.UTF-8" locale so splunk will be utf-8 enabled by default
 RUN apt-get update  && apt-get install -y --no-install-recommends apt-utils && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
@@ -37,8 +37,8 @@ RUN apt-get update && apt-get install -y wget sudo \
     && mkdir -p /var/opt/splunk \
     && cp -R ${SPLUNK_HOME}/etc ${SPLUNK_BACKUP_DEFAULT_ETC} \
     && rm -fR ${SPLUNK_HOME}/etc \
-    && chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} ${SPLUNK_HOME} \
-    && chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} ${SPLUNK_BACKUP_DEFAULT_ETC} \
+#    && chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} ${SPLUNK_HOME} \
+#    && chown -R ${SPLUNK_USER}:${SPLUNK_GROUP} ${SPLUNK_BACKUP_DEFAULT_ETC} \
     && rm -rf /var/lib/apt/lists/*
 
 
